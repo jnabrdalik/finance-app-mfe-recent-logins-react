@@ -10,12 +10,21 @@ import axios from "axios";
 
 export default function RecentLoginList() {
   const [loginData, setLoginData] = useState([]);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/logins")
-      .then((res) => setLoginData(res.data));
-  }, []);
+      .get("http://localhost:8000/logins", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(
+        (res) =>
+          setLoginData(
+            res.data.sort((a, b) => b.datetime.localeCompare(a.datetime))
+          ),
+        () => setLoginData([])
+      );
+  }, [token]);
 
   return (
     <TableContainer component={Paper}>
